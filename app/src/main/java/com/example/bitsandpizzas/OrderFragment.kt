@@ -10,8 +10,10 @@ import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 
 class OrderFragment : Fragment() {
 
@@ -23,18 +25,35 @@ class OrderFragment : Fragment() {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
 
 
-        val pizzaGroup = view.findViewById<RadioGroup>(R.id.pizza_group)
-        val pizzaType = pizzaGroup.checkedRadioButtonId
+        val fab = view.findViewById<FloatingActionButton>(R.id.fab)
+        fab.setOnClickListener {
+            val pizzaGroup = view.findViewById<RadioGroup>(R.id.pizza_group)
+            val pizzaType = pizzaGroup.checkedRadioButtonId
 
-        if (pizzaType == -1) {
-            //no item selected
-        } else {
-            val radio = view.findViewById<RadioButton>(pizzaType)
-            //Do something with radio button
+            if (pizzaType == -1) {
+                quickToast("You need to choose a pizza type")
+            } else {
+                var text = when (pizzaType) {
+                    R.id.radio_diavolo -> "Diavolo pizza"
+                    else -> "Funghi pizza"
+                }
+                val parmesan = view.findViewById<Chip>(R.id.parmesan)
+                text += if (parmesan.isChecked) ", extra parmesan" else ""
+                val chiliOil = view.findViewById<Chip>(R.id.chili_oil)
+                text += if (chiliOil.isChecked) ", extra chili oil" else ""
+
+                quickSnackbar(fab, "$text")
+            }
+
         }
-
-
         return view
     }
 
+    fun quickToast(msg: String)  {
+        Toast.makeText(activity, "$msg", Toast.LENGTH_SHORT).show()
+    }
+
+    fun quickSnackbar(view: View, msg: String) {
+        Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show()
+    }
 }
